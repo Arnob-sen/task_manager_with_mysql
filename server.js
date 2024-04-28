@@ -23,6 +23,34 @@ connection.connect(err => {
   console.log('Connected to MySQL database');
 });
 
+// Routes
+// Create a new task
+app.post('/tasks', (req, res) => {
+  const { title, description, status } = req.body;
+  const sql = 'INSERT INTO tasks (title, description, status) VALUES (?, ?, ?)';
+  connection.query(sql, [title, description, status], (err, result) => {
+    if (err) {
+      console.error('Error creating task:', err);
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+    }
+    res.status(201).json({ id: result.insertId, title, description, status });
+  });
+});
+
+// Get all tasks
+app.get('/tasks', (req, res) => {
+  const sql = 'SELECT * FROM tasks';
+  connection.query(sql, (err, results) => {
+    if (err) {
+      console.error('Error fetching tasks:', err);
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+    }
+    res.json(results);
+  });
+});
+
 
 
 // Start the server

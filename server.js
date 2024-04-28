@@ -70,6 +70,23 @@ app.put('/tasks/:id', (req, res) => {
   });
 });
 
+// Delete a task by ID
+app.delete('/tasks/:id', (req, res) => {
+  const taskId = req.params.id;
+  const sql = 'DELETE FROM tasks WHERE id = ?';
+  connection.query(sql, taskId, (err, result) => {
+    if (err) {
+      console.error('Error deleting task:', err);
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+    }
+    if (result.affectedRows === 0) {
+      res.status(404).json({ error: 'Task not found' });
+      return;
+    }
+    res.status(204).end();
+  });
+});
 
 // Start the server
 app.listen(PORT, () => {

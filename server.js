@@ -51,6 +51,24 @@ app.get('/tasks', (req, res) => {
   });
 });
 
+// Update a task by ID
+app.put('/tasks/:id', (req, res) => {
+  const taskId = req.params.id;
+  const { title, description, status } = req.body;
+  const sql = 'UPDATE tasks SET title = ?, description = ?, status = ? WHERE id = ?';
+  connection.query(sql, [title, description, status, taskId], (err, result) => {
+    if (err) {
+      console.error('Error updating task:', err);
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+    }
+    if (result.affectedRows === 0) {
+      res.status(404).json({ error: 'Task not found' });
+      return;
+    }
+    res.json({ id: taskId, title, description, status });
+  });
+});
 
 
 // Start the server
